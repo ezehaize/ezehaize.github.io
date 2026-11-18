@@ -163,7 +163,7 @@ h2.tag-h.g{background:var(--sage)}
 .mosaic:hover img{transform:scale(1.03)}
 .pl{position:absolute;left:50%;top:50%;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:50%;background:var(--sage);box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
 .pl::after{content:"";position:absolute;left:31px;top:24px;border:15px solid transparent;border-left:23px solid #fff;border-right:0}
-.srv{position:relative;border-radius:6px;overflow:hidden;background:#000}
+.srv{position:relative}.srv video{border-radius:6px;background:#000}
 .srv video{width:100%;aspect-ratio:16/9;display:block;object-fit:cover}
 .srv .snd{position:absolute;right:12px;top:12px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:rgba(242,234,216,.92);color:#1d2b32;font:700 14px Montserrat,sans-serif;cursor:pointer}
 .kick{font-size:13px;font-weight:700;letter-spacing:.04em;opacity:.8}
@@ -251,10 +251,10 @@ body{font-weight:400}
 .rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
 .rv.in{opacity:1;transform:none}
 /* video tiles */
-.vw{position:relative;border-radius:12px;overflow:hidden;background:#000;cursor:pointer}
-.vw video{border-radius:0!important;transition:transform .5s}
-.it.v:not(.playing) .vw:hover video{transform:scale(1.04)}
-.vplay{position:absolute;inset:0;display:grid;place-items:center;border:0;padding:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.45));cursor:pointer;transition:opacity .25s}
+.vw{position:relative;border-radius:12px;cursor:pointer}
+.vw video{display:block}
+
+.vplay{position:absolute;inset:0;display:grid;place-items:center;border:0;padding:0;border-radius:12px;background:linear-gradient(transparent 55%,rgba(0,0,0,.45));cursor:pointer;transition:opacity .25s}
 .vplay span{width:58px;height:58px;border-radius:50%;background:rgba(242,234,216,.92);position:relative;box-shadow:0 10px 26px -8px rgba(0,0,0,.6);transition:transform .25s,background .25s}
 .vplay span::after{content:"";position:absolute;left:23px;top:18px;border:11px solid transparent;border-left:17px solid #1d2b32;border-right:0}
 .vw:hover .vplay span{transform:scale(1.12);background:#fff}
@@ -1151,7 +1151,7 @@ const links=[...document.querySelectorAll('.nav a.l')];
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
 ['showreel','reels','work','how','about','contact'].forEach(id=>{const el=document.getElementById(id);el&&io.observe(el)});
 /* reveal on scroll */
-const rvSel='.sec-h,.chips,.railwrap,.binc,.how li,.howx>div,.about>div,.contact .wrap>div,.sr>div';
+const rvSel='.sec-h,.chips,.binc,.how li,.howx>div,.about>div,.contact .wrap>div,.sr>div:not(.srv)';
 const rio=!RM&&'IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'}):null;
 const reveal=root=>{if(!rio)return;root.querySelectorAll(rvSel).forEach(el=>{if(el.classList.contains('rv'))return;const sib=[...el.parentNode.children].filter(c=>c.matches(rvSel));el.style.setProperty('--d',Math.min(sib.indexOf(el),5)*.08+'s');el.classList.add('rv');rio.observe(el)})};
 reveal(document);
