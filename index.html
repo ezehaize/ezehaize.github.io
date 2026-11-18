@@ -346,8 +346,7 @@ body{font-weight:400}
     <span class="kick">A FEW YEARS OF WORK IN ONE VIDEO</span>
     <p class="plate srt">Showreel</p>
     <p class="poem">Dark into light,<br>sorrow into curiosity.<br>A life full of learning and growth.</p>
-    <p class="srp">Courses, brand content, motion graphics and personal films: the best of my editing, cut together.</p>
-    <button class="btn srb" id="srplay" type="button">Watch with sound ▶</button>
+    <p class="srp" style="margin-bottom:0">Courses, brand content, motion graphics and personal films: the best of my editing, cut together.</p>
   </div>
 </div></section>
 
@@ -1128,7 +1127,7 @@ const srv=document.getElementById('srv');window.__blob&&window.__blob(srv).then(
 const setSnd=()=>{srsnd.textContent=srv.muted?'Sound on':'Mute'};
 const unmute=()=>{srv.muted=false;srv.loop=false;srv.play().catch(()=>{});setSnd()};
 srsnd.addEventListener('click',()=>{if(srv.muted)unmute();else{srv.muted=true;srv.loop=true;setSnd()}});
-srplay.addEventListener('click',()=>{srv.currentTime=0;unmute();srv.scrollIntoView({block:'center'})});
+srplay&&srplay.addEventListener('click',()=>{srv.currentTime=0;unmute();srv.scrollIntoView({block:'center'})});
 srv.addEventListener('volumechange',setSnd);
 if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
  new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>=.5)srv.play().catch(()=>{});else if(!e.isIntersecting||e.intersectionRatio<.2)srv.pause()}),{threshold:[0,.2,.5]}).observe(srv);
