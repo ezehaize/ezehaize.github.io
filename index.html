@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ezequiel Martinengo · Video Editor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, confident, playful; a self-taught editor who loves the craft.
+   IDEA: an editing suite: every section is a bin you open to see the footage inside.
+   PICTURE: a square-cornered editor window whose program monitor shows a pixel-art forest at dusk with fireflies.
+   COLOUR and TYPE: slate blue labels, sage highlights, cream ground, deep slate bands; Montserrat ExtraBold labels, Anton plates.
+   LAYOUT: hero statement beside the editor, showreel, reels, work bins that expand, about, clients, contact. */
+:root{color-scheme:light dark;
+--bg:light-dark(#f1ece1,#122027);--ink:light-dark(#1d2b32,#ece6d8);--muted:light-dark(#4e5f66,#a9b8bc);
+--card:light-dark(#fbf8f2,#1a2c34);--line:light-dark(#ddd5c4,#2a414b);
+--slate:#3c6577;--deep:#1d3440;--sage:#5a8a64;--cream:#f2ead8;--sageInk:light-dark(#3f6b48,#8fc29a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.6 Montserrat,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3{font-weight:800;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h3{font-size:19px;line-height:1.25}
+p{margin:0}a{color:inherit}
+.band{padding:clamp(32px,4.5vw,68px) max(5vw,16px)}
+.wrap{max-width:1240px;margin:0 auto}
+.lbl{background:var(--slate);color:#fff;padding:.06em .3em;border-radius:4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.lbl.g{background:var(--sage)}
+h2.tag-h{display:inline-block;justify-self:start;background:var(--slate);color:#fff;font-size:clamp(24px,3vw,34px);padding:.18em .45em;border-radius:6px}
+h2.tag-h.g{background:var(--sage)}
+.plate{font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;line-height:1;letter-spacing:.01em}
+.nav{position:sticky;top:0;z-index:5;background:var(--deep);color:var(--cream)}
+.nav .wrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:12px max(5vw,16px)}
+.brand{font-family:Anton,sans-serif;font-size:22px;letter-spacing:.02em;text-decoration:none;margin-inline-end:auto}
+.nav a.l{text-decoration:none;font-size:15px;font-weight:600;opacity:.85;padding:10px 4px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 20px;border-radius:8px;font:700 15px Montserrat,sans-serif;text-decoration:none;border:2px solid transparent;cursor:pointer;background:none;color:inherit}
+.btn.p{background:var(--sage);color:#fff}
+.btn.s{border-color:currentColor}
+.btn:focus-visible,a:focus-visible,button:focus-visible,video:focus-visible{outline:3px solid var(--sage);outline-offset:3px}
+/* hero */
+.who{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.who img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid var(--sage)}
+.who b{display:block;font-size:17px}.who small{color:var(--muted);font-size:14px}
+.hero h1{font-size:clamp(24px,2.7vw,33px);line-height:1.38}
+.hero .hl{font-family:Montserrat,system-ui,sans-serif;font-size:clamp(24px,3.3vw,48px);line-height:1.4;font-weight:500;letter-spacing:-.01em;max-width:none;text-wrap:pretty}
+.hero .hl .lbl{color:inherit;font-weight:600;border-radius:4px;padding:.02em .2em;-webkit-box-decoration-break:clone;box-decoration-break:clone;background:rgba(60,101,119,.28)}
+.hero .hl .lbl.g{background:rgba(90,138,100,.32)}
+.ctas{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+/* editor window */
+.hg{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"who" "txt";column-gap:clamp(16px,4vw,56px);align-items:center}
+.hg .who{grid-area:who}.hg .txt{grid-area:txt}
+.ed{background:#0f1f26;color:#a9c4c9;border-radius:3px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(20,35,40,.6);font-size:11px}
+.bar{display:flex;align-items:center;gap:7px;padding:8px 12px;background:#0a161b}
+.bar i{width:9px;height:9px;background:#3c6577}.bar i:nth-child(2){background:#5a8a64}.bar i:nth-child(3){background:#f2ead8}
+.bar span{margin-inline-start:8px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panes{display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1.9fr) minmax(0,.6fr);gap:8px;padding:8px}
+.pane{background:#14262e;border-radius:1px;padding:8px;display:grid;gap:6px;align-content:start}
+.pane h4{margin:0 0 2px;font-size:11px;font-weight:700;color:#d9e6e4}
+.file{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 0}
+.ic{flex:none;width:12px;height:9px;background:#3c6577}.ic.a{background:#5a8a64}.ic.t{background:#f2ead8}
+.row{display:flex;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px solid #1f3842;white-space:nowrap}
+.row em{font-style:normal;color:#f2ead8}
+.mon{background:#071116;border-radius:1px;padding:8px;align-self:start}
+.scr{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0d2a2e}
+.scr canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.tcode{position:absolute;right:6px;bottom:6px;font:600 10px/1 Montserrat,sans-serif;color:#f2ead8;background:rgba(15,31,38,.75);padding:3px 5px;font-variant-numeric:tabular-nums}
+.tl{display:grid;grid-template-columns:40px minmax(0,1fr);gap:5px 8px;padding:0 10px 12px}
+.tl .lab{align-self:center;font-weight:700}
+.tlbox{position:relative;grid-column:2;grid-row:1/span 4;display:grid;gap:5px}
+.tr{position:relative;height:16px;background:#1a3039}
+.clip{position:absolute;top:2px;bottom:2px}
+.head{position:absolute;top:-5px;bottom:-5px;width:2px;background:#f2ead8;left:0}
+@media(max-width:1000px){.panes{grid-template-columns:minmax(0,1fr)}.side{display:none}.tl{grid-template-columns:minmax(0,1fr)}.tl .lab{display:none}.tlbox{grid-column:1}}
+@media(max-width:640px){.hg{align-items:start}.hg .ctas .btn{padding:0 14px}.hero .hl{font-size:26px;line-height:1.32}.bar{padding:6px 8px}.bar span{display:none}.panes{padding:6px}.mon{padding:5px}.scr{aspect-ratio:3/4}.tl{padding:0 6px 8px}.tr{height:10px}}
+/* work bins */
+.sec-h{display:grid;gap:14px;margin-bottom:28px;max-width:70ch}
+.sec-h p{color:var(--muted)}
+.bins{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr));gap:18px}
+.binc{all:unset;cursor:pointer;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .2s}
+.binc:hover{transform:translateY(-3px)}
+.binc:focus-visible{outline:3px solid var(--sage);outline-offset:3px}
+.binc[aria-current=true]{border-color:var(--sage);box-shadow:0 0 0 2px var(--sage)}
+.cv{position:relative;aspect-ratio:16/9;background:var(--deep);overflow:hidden}
+.cv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.cv .ct{position:absolute;left:12px;bottom:12px;font-size:13px;font-weight:800;color:#fff;background:var(--slate);padding:4px 8px;border-radius:4px}
+.cv .tx{display:grid;place-items:center;height:100%;background:var(--sage);color:#fff;font-family:Anton,sans-serif;font-size:34px;text-transform:uppercase;text-align:center;line-height:1;padding:12px}
+.binc .b{padding:16px 18px 18px;display:grid;gap:6px}
+.binc .b p{color:var(--muted);font-size:15px}
+.binc .open{font-weight:700;color:var(--sageInk);font-size:14px}
+/* detail */
+.detail{margin-top:30px;background:var(--deep);color:var(--cream);border-radius:18px;padding:clamp(20px,3.5vw,40px);background-image:linear-gradient(rgba(242,234,216,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(242,234,216,.05) 1px,transparent 1px);background-size:28px 28px}
+.detail[hidden]{display:none}
+.dh{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:start}
+.dh .plate{font-size:clamp(34px,4.4vw,56px)}
+.close{border:2px solid rgba(242,234,216,.5);color:var(--cream)}
+.dbody{opacity:.9;max-width:72ch;margin:14px 0 22px}
+.dgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(18px,3vw,40px);margin:18px 0 28px}
+.dgrid p{opacity:.9;max-width:60ch}
+.dgrid ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.dgrid li{padding-inline-start:22px;position:relative;opacity:.92}
+.dgrid li::before{content:"›";position:absolute;left:0;top:-.05em;font-weight:800;color:#8fc29a;font-size:20px}
+.items{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:12px;align-items:start}
+.it{flex:none;scroll-snap-align:start;display:grid;gap:8px}
+.it.v{width:clamp(190px,22vw,230px)}
+.it.v video{width:100%;aspect-ratio:9/16;border-radius:12px;background:#000;object-fit:cover;display:block}
+.it.v.h{width:clamp(280px,38vw,440px)}
+.it.v.h:only-child{width:min(100%,680px)}
+.it.v.h video{aspect-ratio:16/9;object-fit:contain}
+.it.y{width:clamp(260px,34vw,380px);text-decoration:none}
+.it.y .th{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.it.y img{width:100%;height:100%;object-fit:cover;display:block}
+.it.y .th span{position:absolute;right:10px;bottom:10px;background:var(--cream);color:#1d2b32;font-weight:800;font-size:13px;padding:5px 9px;border-radius:5px}
+.it .k{font-size:12px;font-weight:700;color:#8fc29a}
+.gdesc{display:flex;align-items:center;gap:14px;margin:0 0 16px;max-width:70ch}
+.gdesc img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid var(--sage);flex:none}
+.gdesc b{display:block;font-size:15px}
+.gdesc p{font-size:15px;opacity:.88}
+.proc{margin:22px 0 6px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px}
+.steps figure{margin:0;display:grid;gap:8px;align-content:start}
+.steps img,.steps video{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;display:block;background:#000}
+.steps figcaption{font-size:14px;opacity:.85}.steps figcaption b{display:block;color:var(--cream)}
+.pal{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;margin:20px 0 12px}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw span{display:grid;justify-items:center;gap:4px;font-size:11px;font-weight:700;opacity:.85}
+.sw i{width:38px;height:38px;border-radius:50%;border:1px solid rgba(242,234,216,.25)}
+.pal p{font-size:14px;opacity:.85;max-width:46ch}
+.it h3{font-size:17px}
+.it .full{font-size:13px;font-weight:700;color:var(--cream);opacity:.85;text-underline-offset:3px}
+.note{font-size:13px;opacity:.7;margin-top:6px}
+.gh{display:inline-block;background:var(--slate);color:#fff;font-size:15px;padding:5px 10px;border-radius:5px;margin:8px 0 14px}
+.items+.gh{margin-top:18px}.items+.items{margin-top:14px}
+.it.t{width:200px;min-height:120px;align-content:space-between;background:rgba(242,234,216,.07);border:1px solid rgba(242,234,216,.18);border-radius:10px;padding:14px;text-decoration:none;color:var(--cream)}
+.it.t:hover{background:rgba(242,234,216,.13)}
+.it.t .kind{font-size:12px;font-weight:700;color:#8fc29a}
+.it.t b{font-size:16px;line-height:1.25}
+.it.t .go{font-size:13px;font-weight:700;opacity:.8}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 18px}
+.chip{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 14px Montserrat,sans-serif;cursor:pointer}
+.chip span{opacity:.55;font-weight:600;margin-inline-start:4px}
+.chip[aria-pressed=true]{background:var(--slate);border-color:var(--slate);color:#fff}
+.chip:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+.rail [hidden]{display:none}
+/* how I work */
+.how{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;counter-reset:st}
+.how li{list-style:none;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;counter-increment:st}
+.how li::before{content:counter(st);display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--sage);color:#fff;font-weight:800;margin-bottom:10px}
+.how h3{font-size:18px;margin-bottom:6px}.how p{color:var(--muted);font-size:15px}
+.howx{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;margin-top:16px}
+.howx div{background:var(--deep);color:var(--cream);border-radius:14px;padding:20px 22px}
+.howx b{display:block;font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;font-size:24px;line-height:1.05;margin-bottom:10px}
+.howx ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
+.howx li{padding-inline-start:18px;position:relative;opacity:.92}.howx li::before{content:"›";position:absolute;left:0;font-weight:800;color:#8fc29a}
+.mail{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px;font-weight:800;font-size:clamp(18px,2.2vw,24px)}
+.mail .btn{min-height:40px;padding:0 14px;font-size:14px}
+/* showreel, about, clients */
+.reelband{background:var(--deep);color:var(--cream);background-image:linear-gradient(rgba(242,234,216,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(242,234,216,.06) 1px,transparent 1px);background-size:28px 28px}
+.sr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(20px,4vw,56px);align-items:center}
+.mosaic{position:relative;display:block;border-radius:6px;overflow:hidden}
+.mosaic img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block;transition:transform .6s}
+.mosaic:hover img{transform:scale(1.03)}
+.pl{position:absolute;left:50%;top:50%;width:78px;height:78px;margin:-39px 0 0 -39px;border-radius:50%;background:var(--sage);box-shadow:0 10px 30px -8px rgba(0,0,0,.6)}
+.pl::after{content:"";position:absolute;left:31px;top:24px;border:15px solid transparent;border-left:23px solid #fff;border-right:0}
+.srv{position:relative;border-radius:6px;overflow:hidden;background:#000}
+.srv video{width:100%;aspect-ratio:16/9;display:block;object-fit:cover}
+.srv .snd{position:absolute;right:12px;top:12px;min-height:40px;padding:0 14px;border:0;border-radius:8px;background:rgba(242,234,216,.92);color:#1d2b32;font:700 14px Montserrat,sans-serif;cursor:pointer}
+.kick{font-size:13px;font-weight:700;letter-spacing:.04em;opacity:.8}
+.srt{font-size:clamp(46px,6vw,80px);margin:10px 0 12px}
+.poem{font-size:clamp(19px,1.9vw,23px);font-weight:700;line-height:1.45;margin-bottom:14px}
+.srp{opacity:.7;font-size:13px;max-width:44ch;margin-bottom:22px}
+.srb{background:var(--cream);color:#1d2b32}
+.rail .it.v .k{color:var(--sageInk)}
+.about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:clamp(20px,4vw,56px);align-items:start}
+.about p+p{margin-top:14px}
+.about .lead{color:var(--muted)}
+.tools{display:grid;gap:12px}
+.tools div{background:var(--deep);color:var(--cream);border-radius:12px;padding:16px 18px}
+.tools b{display:block;font-family:Anton,sans-serif;font-weight:400;text-transform:uppercase;font-size:24px;line-height:1.05}
+.tools span{opacity:.8;font-size:14px}
+.clients{display:flex;flex-wrap:wrap;gap:12px}
+.clients span{font-weight:800;font-size:clamp(16px,1.8vw,19px);padding:8px 14px;border-radius:6px;background:var(--card);border:1px solid var(--line)}
+.contact{background:var(--slate);color:#fff}
+.contact .wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:center}
+.contact .plate{font-size:clamp(34px,4.4vw,56px)}
+.contact p{opacity:.9;margin-top:14px;max-width:54ch}
+.contact .btn{background:var(--cream);color:#1d2b32}
+footer{background:var(--deep);color:#a9b8bc;font-size:14px;padding:18px max(5vw,16px)}
+@media(max-width:860px){.how{grid-template-columns:repeat(2,minmax(0,1fr))}.sr,.dgrid,.about,.contact .wrap{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){.nav a.l{display:none}.nav .wrap{flex-wrap:nowrap}.brand{font-size:18px}}
+@media(prefers-reduced-motion:reduce){.binc,.mosaic img{transition:none}}
+
+/* polish pass */
+body{font-weight:400}
+.sec-h p,.lead,.binc .b p,.how p{font-weight:400}
+.bins{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.bins .binc:first-child,.bins .binc:last-child{grid-column:span 2}
+.bins .binc:first-child .cv,.bins .binc:last-child .cv{aspect-ratio:auto;height:100%;min-height:240px}
+.bins .binc:last-child .cv{background:linear-gradient(#14262f,#2e5260)}
+.bins .binc:last-child .cv img{object-fit:cover}
+.binc{transition:transform .25s,box-shadow .25s}
+.binc:hover{transform:translateY(-4px);box-shadow:0 18px 40px -22px rgba(20,35,40,.45)}
+.cv img{transition:transform .6s}
+.binc:hover .cv img{transform:scale(1.04)}
+.binc .b h3{font-size:20px}
+.binc .open{display:inline-flex;justify-self:start;align-self:start;margin-top:4px;padding:6px 12px;border-radius:999px;background:var(--sage);color:#fff}
+.detail{animation:rise .35s ease-out}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.railwrap{position:relative}
+.railwrap::after{content:"";position:absolute;right:0;top:0;bottom:14px;width:60px;background:linear-gradient(90deg,transparent,var(--bg));pointer-events:none}
+.rarr{position:absolute;top:38%;z-index:2;width:46px;height:46px;border-radius:50%;border:0;background:var(--deep);color:var(--cream);font-size:22px;cursor:pointer;box-shadow:0 10px 24px -10px rgba(0,0,0,.5)}
+.rarr.l{left:-14px}.rarr.r{right:-14px}
+.rarr:focus-visible{outline:3px solid var(--sage);outline-offset:2px}
+#how{background:var(--card);border-block:1px solid var(--line);padding-top:clamp(32px,4.5vw,68px)!important}
+.how li{background:var(--bg)}
+.foot{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;justify-content:space-between}
+.foot nav{display:flex;flex-wrap:wrap;gap:6px 18px}
+.foot a{color:#d9e6e4;text-decoration:none;font-weight:600}
+.foot a:hover{text-decoration:underline}
+@media(max-width:860px){.bins{grid-template-columns:repeat(2,minmax(0,1fr))}.bins .binc:last-child{grid-column:auto}.bins .binc:last-child .cv{aspect-ratio:16/9;height:auto;min-height:0}}
+@media(max-width:560px){.how{grid-template-columns:minmax(0,1fr)}.bins{grid-template-columns:minmax(0,1fr)}.bins .binc:first-child{grid-column:auto}.bins .binc:first-child .cv{aspect-ratio:16/9;height:auto;min-height:0}.rarr{display:none}}
+@media(prefers-reduced-motion:reduce){.detail{animation:none}.cv img,.binc{transition:none}}
+.bins .binc:first-child,.bins .binc:last-child{flex-direction:row}
+.bins .binc:first-child .cv,.bins .binc:last-child .cv{flex:1.4}
+.bins .binc:first-child .b,.bins .binc:last-child .b{flex:1;align-content:center}
+@media(max-width:560px){.bins .binc:first-child{flex-direction:column}.bins .binc:first-child .cv{flex:none}}
+@media(max-width:860px){.bins .binc:last-child{flex-direction:column}.bins .binc:last-child .cv{flex:none}}
+
+/* ===== interactive pass ===== */
+.prog{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--sage),#8fc29a);transform-origin:0 50%;transform:scaleX(0)}
+.nav a.l{position:relative;opacity:.75;transition:opacity .2s}
+.nav a.l::after{content:"";position:absolute;left:4px;right:4px;bottom:4px;height:2px;background:#8fc29a;border-radius:2px;transform:scaleX(0);transition:transform .3s}
+.nav a.l:hover,.nav a.l.on{opacity:1}.nav a.l:hover::after,.nav a.l.on::after{transform:scaleX(1)}
+.btn{transition:transform .2s,box-shadow .2s,background .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(0,0,0,.45)}
+.btn:active{transform:translateY(0)}
+/* hero */
+.svc{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;padding:0;list-style:none}
+.svc li{font-size:14px;font-weight:600;padding:6px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);transition:background .2s,color .2s,border-color .2s}
+.svc li:hover{background:var(--slate);border-color:var(--slate);color:#fff}
+.hero .hl .lbl{background-size:0% 100%;background-repeat:no-repeat;background-color:transparent;background-image:linear-gradient(rgba(60,101,119,.28),rgba(60,101,119,.28));transition:background-size 1.1s cubic-bezier(.6,.1,.2,1)}
+.hero .hl .lbl.g{background-image:linear-gradient(rgba(90,138,100,.32),rgba(90,138,100,.32));transition-delay:.5s}
+.hero.lit .hl .lbl{background-size:100% 100%}
+.who img{transition:transform .4s}.who:hover img{transform:rotate(-6deg) scale(1.06)}
+.cue{display:inline-flex;align-items:center;gap:10px;margin-top:34px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none}
+.cue i{width:22px;height:34px;border:2px solid currentColor;border-radius:12px;position:relative}
+.cue i::after{content:"";position:absolute;left:50%;top:6px;width:4px;height:7px;margin-left:-2px;border-radius:2px;background:currentColor;animation:cue 1.6s infinite}
+@keyframes cue{0%{opacity:0;transform:translateY(-2px)}40%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.rv.in{opacity:1;transform:none}
+/* video tiles */
+.vw{position:relative;border-radius:12px;overflow:hidden;background:#000;cursor:pointer}
+.vw video{border-radius:0!important;transition:transform .5s}
+.it.v:not(.playing) .vw:hover video{transform:scale(1.04)}
+.vplay{position:absolute;inset:0;display:grid;place-items:center;border:0;padding:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.45));cursor:pointer;transition:opacity .25s}
+.vplay span{width:58px;height:58px;border-radius:50%;background:rgba(242,234,216,.92);position:relative;box-shadow:0 10px 26px -8px rgba(0,0,0,.6);transition:transform .25s,background .25s}
+.vplay span::after{content:"";position:absolute;left:23px;top:18px;border:11px solid transparent;border-left:17px solid #1d2b32;border-right:0}
+.vw:hover .vplay span{transform:scale(1.12);background:#fff}
+.it.v.playing .vplay{opacity:0;pointer-events:none}
+.it.v.preview .vplay span{opacity:0}
+.it.v{transition:transform .25s}
+.rail .it.v h3{transition:color .2s}.rail .it.v:hover h3{color:var(--sageInk)}
+.it.y .th img{transition:transform .5s}.it.y:hover .th img{transform:scale(1.05)}
+.chip{transition:background .2s,color .2s,border-color .2s,transform .2s}.chip:hover{transform:translateY(-1px);border-color:var(--slate)}
+.rarr{transition:transform .2s,opacity .2s,background .2s}.rarr:hover{transform:scale(1.1);background:var(--slate)}.rarr[disabled]{opacity:0;pointer-events:none}
+.rdots{display:flex;justify-content:center;gap:6px;margin-top:6px}
+.rbar{height:4px;border-radius:4px;background:var(--line);overflow:hidden;max-width:220px;margin:8px auto 0}
+.rbar i{display:block;height:100%;width:20%;background:var(--slate);border-radius:4px;transition:transform .15s}
+/* how I work: connected steps */
+.how li{position:relative;transition:transform .25s,box-shadow .25s,border-color .25s}
+.how li:hover{transform:translateY(-4px);border-color:var(--sage);box-shadow:0 18px 36px -24px rgba(20,35,40,.5)}
+.how li::before{transition:transform .3s,background .3s}.how li:hover::before{transform:scale(1.12) rotate(-8deg);background:var(--slate)}
+.howx div{transition:transform .25s}.howx div:hover{transform:translateY(-3px)}
+/* about stats */
+.stats{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:12px}
+.stats .plat{display:grid;align-content:center;gap:2px}.stats .plat p{font-weight:700;font-size:15px;line-height:1.35;color:var(--ink)}
+.tools .stats{background:none;padding:0;border-radius:0;color:inherit}
+.tools .stats b{font-family:Montserrat,system-ui,sans-serif;text-transform:none}
+.tools .stats div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center}
+.stats b{display:block;font-size:clamp(30px,3.4vw,42px);font-weight:800;color:var(--slate);line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;color:var(--muted);font-weight:600}
+.tools div.ai{background:var(--deep);color:var(--cream);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+.tools div.ai::after{content:"";position:absolute;inset:-40%;background:conic-gradient(from 0deg,transparent,rgba(143,194,154,.18),transparent 30%);animation:spin 8s linear infinite;pointer-events:none}
+@keyframes spin{to{transform:rotate(1turn)}}
+/* contact */
+.contact{position:relative;overflow:hidden}
+.contact::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:28px 28px;pointer-events:none}
+.contact .wrap{position:relative}
+.contact .ctas .btn{min-height:56px;padding:0 28px;font-size:17px}
+/* floating */
+.fab{position:fixed;right:18px;bottom:18px;z-index:6;display:flex;gap:10px;opacity:0;transform:translateY(20px);pointer-events:none;transition:opacity .3s,transform .3s}
+.fab.on{opacity:1;transform:none;pointer-events:auto}
+.fab a{display:grid;place-items:center;min-height:48px;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 12px 28px -12px rgba(0,0,0,.55)}
+.fab .top{width:48px;background:var(--deep);color:var(--cream);font-size:20px}
+.fab .hire{padding:0 20px;background:var(--sage);color:#fff}
+.fab.hide-hire .hire{display:none}
+@media(max-width:640px){
+ .nav .wrap{flex-wrap:wrap;row-gap:0;padding-bottom:0}
+ .nav a.l{display:inline-block;font-size:14px;padding:8px 2px 12px}
+ .nav .wrap .l:first-of-type{margin-inline-start:0}
+ .navl{display:flex;gap:18px;overflow-x:auto;width:100%;scrollbar-width:none}
+ .cue{display:none}
+}
+@media(min-width:641px){.navl{display:contents}}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.hero .hl .lbl{transition:none;background-size:100% 100%}.cue i::after,.tools div.ai::after{animation:none}.vw video,.how li,.btn{transition:none}}
+
+/* amber accent pass */
+:root{--amber:#f6d69a;--amberHi:#fae4b8}
+.nav .btn.p,.fab .hire,.contact .ctas .btn{background:var(--amber);color:#1d2b32}
+.nav .btn.p:hover,.fab .hire:hover,.contact .ctas .btn:hover{background:var(--amberHi)}
+.vplay span{background:var(--amber)}.vw:hover .vplay span{background:var(--amberHi)}
+.vplay span::after{border-left-color:#1d2b32}
+.pl{background:var(--amber)}
+.prog{background:linear-gradient(90deg,var(--amber),var(--amberHi))}
+.nav a.l::after{background:var(--amber)}
+.contact{background:var(--deep);color:var(--cream)}
+.contact .plate{color:var(--cream)}
+.contact .mail a{text-decoration-color:var(--amber);text-underline-offset:5px}
+.contact #cp{background:transparent;color:var(--cream);border-color:rgba(242,234,216,.45)}
+.contact::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(246,214,154,.2),transparent 65%);pointer-events:none}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="wrap">
+  <a class="brand" href="#top">HAIZE PRODUCCIONES</a>
+  <a class="btn p" href="#contact" style="order:2">Contact</a>
+  <div class="navl" style="order:3"><a class="l" href="#showreel">Showreel</a><a class="l" href="#reels">Reels</a><a class="l" href="#work">Work</a><a class="l" href="#how">How I work</a><a class="l" href="#about">About</a></div>
+</div><i class="prog" id="prog"></i></nav>
+
+<header class="hero band" id="top"><div class="wrap hg">
+  <div class="who"><img src="assets/foto.jpg" alt="Ezequiel Martinengo"><div><b>Ezequiel Martinengo</b><small>Video editor · Motion graphics · AI video · Buenos Aires</small></div></div>
+  <div class="txt"><h1 class="hl">For over a decade, I’ve transformed raw footage and images into <span class="lbl">powerful, emotional narratives</span>. I work with businesses, influencers, agencies and individuals. To me, editing is more than technique: it’s creativity, connection and <span class="lbl g">a touch of magic.</span></h1>
+  <ul class="svc"><li>Reels &amp; shorts</li><li>YouTube &amp; podcasts</li><li>Motion graphics</li><li>Courses</li><li>AI video</li></ul>
+  <div class="ctas"><a class="btn p" href="#showreel">Watch the showreel</a><a class="btn s" href="#contact">Let’s work together</a></div>
+  <a class="cue" href="#showreel"><i></i>Scroll to see my work</a></div>
+</div></header>
+
+<section class="reelband band" id="showreel"><div class="wrap sr">
+  <div class="srv">
+    <video id="srv" src="showreel/showreel.mp4" poster="assets/showreel-cover.jpg" muted loop playsinline controls preload="metadata" aria-label="Showreel"></video>
+    <button class="snd" id="srsnd" type="button">Sound on</button>
+  </div>
+  <div>
+    <span class="kick">A FEW YEARS OF WORK IN ONE VIDEO</span>
+    <p class="plate srt">Showreel</p>
+    <p class="poem">Dark into light,<br>sorrow into curiosity.<br>A life full of learning and growth.</p>
+    <p class="srp">Courses, brand content, motion graphics and personal films: the best of my editing, cut together.</p>
+    <button class="btn srb" id="srplay" type="button">Watch with sound ▶</button>
+  </div>
+</div></section>
+
+<section class="band" id="reels"><div class="wrap">
+  <div class="sec-h"><h2 class="tag-h">Reels and vertical content</h2><p>Some of the reels I edited, for brands and for my own account. Swipe to see more and tap one to watch it with sound. Spanish-language content.</p></div>
+  <div class="chips" id="chips" role="toolbar" aria-label="Filter reels"></div>
+  <div class="railwrap"><button class="rarr l" type="button" aria-label="Previous reels">‹</button><div class="items rail" id="rail"></div><button class="rarr r" type="button" aria-label="Next reels">›</button></div>
+</div></section>
+
+<section class="band" id="work" style="padding-top:0"><div class="wrap">
+  <div class="sec-h"><h2 class="tag-h">My work</h2><p>Pick a project to open it and see more about it, with the videos.</p></div>
+  <div class="bins" id="bins"></div>
+  <div class="detail" id="detail" hidden aria-live="polite"></div>
+</div></section>
+
+<section class="band" id="how" style="padding-top:0"><div class="wrap">
+  <div class="sec-h"><h2 class="tag-h g">How I work</h2><p>I see myself as a bridge between your ideas and reality. This is how we get there together, 100% online, with direct and fluid communication with me throughout the whole project.</p></div>
+  <ol class="how" style="margin:0;padding:0">
+    <li><h3>Understanding you</h3><p>Before anything else, I want to understand what you’re looking for: your language, your goal and the meaning behind what you do. Honest, open communication is what makes the result feel like yours.</p></li>
+    <li><h3>Timeline and price</h3><p>Once we’ve defined what you need, we set the timeline for your project and agree on the price.</p></li>
+    <li><h3>Agreement and deposit</h3><p>Before starting, we confirm what’s included, the price, the timeline and the payment terms in a short written agreement that we both sign. A 50% deposit gets the project going.</p></li>
+    <li><h3>Your material</h3><p>You send me the footage, audio, brand assets and references.</p></li>
+    <li><h3>First version and changes</h3><p>I send you a first version and you tell me every change you want. Two rounds of revisions are included in the price.</p></li>
+    <li><h3>Final delivery</h3><p>You pay the remaining balance and receive the final files, ready to publish, together with the invoice.</p></li>
+  </ol>
+  <div class="howx">
+    <div><b>How pricing works</b><ul><li>A closed price per project, agreed before we start</li><li>No surprises: the price you approve is the price you pay</li><li>Two rounds of revisions included</li><li>New ideas or anything outside what we agreed are quoted separately, always before doing them</li><li>50% deposit to start, 50% before the final delivery</li><li>Invoice with the final delivery</li></ul></div>
+    <div><b>Working together</b><ul><li>You work directly with me, no intermediaries</li><li>Monday to Friday, 10 am to 5 pm (Argentina, UTC−3), with replies within 24 hours</li><li>A reel usually takes 2 to 4 business days; a longer video, about a week</li><li>The exact timeline is set for each project</li></ul></div>
+  </div>
+</div></section>
+
+<section class="band" id="about" style="padding-top:clamp(48px,8vw,110px)"><div class="wrap about">
+  <div>
+    <div class="sec-h" style="margin-bottom:18px"><h2 class="tag-h g">About me</h2></div>
+    <p>Hey there! I’m Ezequiel, a 26-year-old video editor with a deep passion for visual storytelling. It all started over twelve years ago, when I launched my own YouTube channel. What began as a hobby became a creative outlet, and eventually a way of life.</p>
+    <p class="lead">Over time, my work expanded from YouTube to Instagram and other platforms, collaborating with real estate firms, small businesses, marketing agencies, influencers and individual creators. My path has been largely self-taught, driven by curiosity and adaptability: I learn new techniques fast and pay close attention to each client’s vision.</p>
+  </div>
+  <div class="tools">
+    <div class="stats"><div><b data-n="12" data-s="+">12+</b><span>years editing</span></div><div class="plat"><p>YouTube · Instagram · TikTok · Courses</p><span>and more</span></div></div>
+    <div class="ai"><b>AI video</b><span>AI-generated videos, scenes and visuals, combined with editing</span></div>
+  </div>
+</div></section>
+
+<section class="contact band" id="contact"><div class="wrap">
+  <div><p class="plate">Got footage that needs a story?</p><p>Tell me about your project and I’ll get back to you with a proposal.</p><div class="mail"><a href="mailto:ezehaize@gmail.com?subject=Project%20inquiry%20%E2%80%93%20Haize" style="color:inherit">ezehaize@gmail.com</a><button class="btn" type="button" id="cp">Copy email</button></div></div>
+  <div class="ctas" style="margin:0"><a class="btn" href="mailto:ezehaize@gmail.com?subject=Project%20inquiry%20%E2%80%93%20Haize">Send me an email</a></div>
+</div></section>
+
+<footer><div class="wrap foot"><span>Haize Producciones · Ezequiel Martinengo · Buenos Aires, Argentina</span><nav><a href="#showreel">Showreel</a><a href="#reels">Reels</a><a href="#work">Work</a><a href="#how">How I work</a><a href="mailto:ezehaize@gmail.com?subject=Project%20inquiry%20%E2%80%93%20Haize">ezehaize@gmail.com</a><a href="#top">Back to top ↑</a></nav></div></footer>
+
+<script>
+(()=>{const ua=navigator.userAgent;const iOS=/iP(hone|ad|od)/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+window.__WK=/claudeusercontent|claude\.ai/.test(location.hostname)&&(iOS||(/AppleWebKit/.test(ua)&&!/Chrome|Chromium|CriOS|Edg|OPR|Firefox|FxiOS/.test(ua)));
+const cache=new Map();
+window.__blob=v=>{if(!window.__WK)return Promise.resolve();const s=v.getAttribute('src');if(!s||s.startsWith('blob:'))return Promise.resolve();
+ const abs=new URL(s,location.href).href;let p=cache.get(abs);
+ if(!p){p=fetch(abs).then(r=>r.blob()).then(b=>URL.createObjectURL(new Blob([b],{type:'video/mp4'})));cache.set(abs,p)}
+ return p.then(u=>{if(v.getAttribute('src')===s){v.src=u;v.load()}}).catch(()=>{})};
+window.__prefetch=v=>{if(!window.__WK)return Promise.resolve();const s=v.getAttribute('src');if(!s||s.startsWith('blob:'))return Promise.resolve();const abs=new URL(s,location.href).href;if(!cache.has(abs))cache.set(abs,fetch(abs).then(r=>r.blob()).then(b=>URL.createObjectURL(new Blob([b],{type:'video/mp4'}))));return cache.get(abs).catch(()=>{})};
+})();
+</script>
+<script>
+{
+const YT=id=>"https://www.youtube.com/watch?v="+id;
+const cats=[
+{
+"id": "hey",
+"t": "“Hey!” Agency",
+"cover": "hey/cover-ib-hd.jpg",
+"short": "Audiovisual content production for Interbanking, Natura, Bio Green, Branca, GSK and Meditalo.",
+"body": "Some examples of the work I’ve done for Hey! Agency: brand content, internal communication and social media pieces for Interbanking, Natura, Bio Green, Branca, GSK and Meditalo. These are just a few examples: there’s a lot more work.",
+"groups": [
+{
+"h": "IBCampus · Interbanking",
+"items": [
+{
+"v": "ib-recap-fin-de-ano",
+"dir": "hey",
+"h": true,
+"k": "IBCampus · Interbanking",
+"t": "Year-end recap"
+},
+{
+"v": "ib-1-ano",
+"dir": "hey",
+"h": true,
+"k": "IBCampus · Interbanking",
+"t": "One year of IB Campus"
+},
+{
+"v": "ib-campus-re",
+"dir": "hey",
+"h": true,
+"k": "IBCampus · Interbanking",
+"t": "Weekly recap"
+},
+{
+"v": "ib-campus-en",
+"dir": "hey",
+"h": false,
+"k": "IBCampus · Interbanking",
+"t": "The World Cup arrives at IBCampus"
+},
+{
+"v": "ib-silvana-mondino",
+"dir": "hey",
+"h": false,
+"k": "IBCampus · Interbanking",
+"t": "Silvana Mondino · Reel"
+},
+{
+"v": "ib-tomas-balmaceda",
+"dir": "hey",
+"h": false,
+"k": "IBCampus · Interbanking",
+"t": "Tomás Balmaceda · Reel"
+}
+]
+},
+{
+"h": "Branca",
+"items": [
+{
+"v": "branca-1",
+"dir": "hey",
+"h": true,
+"k": "Branca",
+"t": "Branca · Cut 1"
+},
+{
+"v": "branca-2",
+"dir": "hey",
+"h": true,
+"k": "Branca",
+"t": "Branca · Cut 2"
+}
+]
+},
+{
+"h": "GSK",
+"items": [
+{
+"v": "gsk-que-es-meningitis",
+"dir": "hey",
+"h": false,
+"k": "GSK",
+"t": "What causes meningitis?"
+},
+{
+"v": "gsk-meningitis",
+"dir": "hey",
+"h": false,
+"k": "GSK",
+"t": "Meningitis"
+},
+{
+"v": "gsk-respiracion",
+"dir": "hey",
+"h": false,
+"k": "GSK",
+"t": "How your respiratory system works"
+},
+{
+"v": "gsk-calor",
+"dir": "hey",
+"h": false,
+"k": "GSK",
+"t": "Heat"
+},
+{
+"v": "gsk-zoster",
+"dir": "hey",
+"h": false,
+"k": "GSK",
+"t": "Zoster tips"
+}
+]
+},
+{
+"h": "Bio Green",
+"items": [
+{
+"v": "bg-evento",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "2025 annual meeting in numbers"
+},
+{
+"v": "bg-anual",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Annual reel"
+},
+{
+"v": "bg-4-anos",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Four years"
+},
+{
+"v": "bg-chile",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Chile"
+},
+{
+"v": "bg-empatia",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Empathy"
+},
+{
+"v": "bg-gratitud",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Gratitude"
+},
+{
+"v": "bg-flor-rubio",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Flor Rubio"
+},
+{
+"v": "bg-dinero",
+"dir": "hey",
+"h": false,
+"k": "Bio Green",
+"t": "Why women entrepreneurs should talk more about money"
+}
+]
+},
+{
+"h": "Natura · Avon",
+"items": [
+{
+"v": "natura-avon",
+"dir": "hey",
+"h": true,
+"k": "Natura · Avon",
+"t": "Avon Glow Experience"
+},
+{
+"v": "natura-consultoria",
+"dir": "hey",
+"h": true,
+"k": "Natura · Avon",
+"t": "Consultancy Day"
+},
+{
+"v": "natura-dia-madres",
+"dir": "hey",
+"h": false,
+"k": "Natura · Avon",
+"t": "Mother’s Day live"
+}
+]
+},
+{
+"h": "MEDITALO",
+"items": [
+{
+"v": "meditalo-animacion",
+"dir": "hey",
+"k": "Meditalo",
+"t": "Meditalo animation"
+},
+{
+"v": "meditalo-ciencia",
+"dir": "hey",
+"k": "Meditalo",
+"t": "What does science say?"
+},
+{
+"v": "meditalo-ia",
+"dir": "hey",
+"k": "Meditalo",
+"t": "AI and meditation"
+}
+]
+}
+]
+},
+{
+"id": "espacio-tdah",
+"t": "Espacio TDAH",
+"cover": "tdah/encuentro-membresia.jpg",
+"short": "In charge of editing content for YouTube and Spotify at @espaciotdah.",
+"body": "I was in charge of editing Espacio TDAH’s content for YouTube and Spotify: long-form videos and podcast episodes with clean cuts, captions and a consistent look. These are just a few examples: there’s a lot more work.",
+"groups": [
+{
+"h": "YouTube videos",
+"items": [
+{
+"v": "lo-que-aprendi",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "What I learned about my ADHD in 26 years",
+"yt": "crYGNkRQrxo"
+},
+{
+"v": "7-cosas",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "7 things that help me with my ADHD",
+"yt": "6OWIWZrsoPE"
+},
+{
+"v": "chore-charms",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "The solution to forgetting? Chore Charms and ADHD",
+"yt": "axxcSY-kwGY"
+},
+{
+"v": "perfeccionismo",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "Transform your relationship with perfectionism",
+"yt": "aO_n67ss7RY"
+},
+{
+"v": "discalculia",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "Can’t do math? Dyscalculia and ADHD",
+"yt": "5tbCcr4du3A"
+},
+{
+"v": "disautonomia",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "All about dysautonomia",
+"yt": "sL29dnCUrGA"
+},
+{
+"v": "escalada",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "Did I find the perfect hobby for my ADHD? All about climbing",
+"yt": "IrHMsWdFi94"
+},
+{
+"v": "encuentro-membresia",
+"dir": "tdah",
+"h": true,
+"k": "YouTube · preview",
+"t": "First ADHD membership meeting",
+"yt": "NgU3enmIvVQ"
+}
+]
+},
+{
+"h": "Podcast",
+"items": [
+{
+"v": "ep170-intensidad",
+"dir": "tdah",
+"h": true,
+"k": "Podcast · preview",
+"t": "Ep. 170: Intensity and ADHD",
+"yt": "Is4bkpYF118"
+},
+{
+"l": "https://open.spotify.com/show/4m1y5lwqBlBoTOLnZSuJvp",
+"kind": "Spotify",
+"t": "Espacio TDAH podcast"
+}
+]
+}
+]
+},
+{
+"id": "courses",
+"t": "Courses",
+"cover": "courses/cover.jpg",
+"short": "“TDAH 101” and “DIVA 5” for @espaciotdah: 4 hours of raw footage turned into dynamic short videos.",
+"body": "I worked on the courses “TDAH 101” and “DIVA 5” for Espacio TDAH, transforming 4 hours of raw footage into dynamic, engaging short videos with animations, sound effects, music and subtitles.",
+"groups": [
+{
+"h": "The courses",
+"items": [
+{
+"v": "tdah101",
+"dir": "courses",
+"h": true,
+"k": "Course promo",
+"t": "TDAH 101"
+},
+{
+"l": "https://espaciotdah.myflodesk.com/m16ct6zhky",
+"kind": "Course page",
+"t": "TDAH 101"
+},
+{
+"kind": "Course · no longer online",
+"t": "DIVA 5",
+"nl": true
+}
+]
+}
+]
+},
+{
+"id": "everything-matters",
+"process": true,
+"t": "“Everything Matters”",
+"cover": "em/hero.jpg",
+"short": "Created during the Motion Graphics course at Coderhouse, where I ranked in the top 10 of my class. Inspired by AURORA.",
+"body": "This project was born from the idea of visually expressing the feelings and emotions that go through my mind when listening to “Everything Matters” by AURORA. Through the melody and the lyrics, she invites us to be mindful of our steps and to pause and contemplate the small yet meaningful things around us: to step away from the noise of routine and remember that we are part of a nature that also pulses with life within.",
+"groups": [
+{
+"h": "The piece",
+"items": [
+{
+"v": "everything-matters",
+"dir": "motion",
+"h": true,
+"yt": "OWVrAGcKar8",
+"k": "Motion graphics",
+"t": "Everything Matters"
+}
+]
+}
+]
+},
+{
+"id": "crisalida",
+"t": "“Crisálida”",
+"cover": "crisalida/ep1.jpg",
+"short": "A personal audiovisual project that captures a part of my story: a journey of growth and self-discovery.",
+"body": "A personal project that portrays part of my story, focusing on my growth and personal development: what I lived through, learned, suppressed and overcame to become the person I am today. Written, filmed and edited by me. It’s a story about learning to pause, finally seeing ourselves, and becoming aligned with what we feel and who we are.",
+"groups": [
+{
+"h": "Episodes",
+"items": [
+{
+"v": "ep1",
+"dir": "crisalida",
+"h": true,
+"parts": [
+"crisalida/ep1-0.mp4",
+"crisalida/ep1-1.mp4",
+"crisalida/ep1-2.mp4"
+],
+"yt": "5ZjJLWYC-oM",
+"k": "Episode 1",
+"t": "I’m afraid to be who I am | Pretending"
+},
+{
+"l": "https://youtube.com/playlist?list=PLWTo_mu4f1QJwEds4SlDWKR65zGvNoPPb",
+"kind": "YouTube playlist",
+"t": "Watch the rest of the episodes"
+}
+]
+}
+]
+},
+{
+"id": "silent-videos",
+"t": "Silent videos",
+"cover": "silent/cancion.jpg",
+"short": "A series that portrays the simplicity of everyday life and the subtle beauty of small things.",
+"body": "A series of videos that portray the simplicity of everyday life, drawing us into the silence and subtle beauty of small things.",
+"groups": [
+{
+"h": "Episodes",
+"items": [
+{
+"v": "cancion",
+"dir": "silent",
+"h": true,
+"yt": "P6Dl1rO0ehY",
+"k": "Silent video · 1-minute preview",
+"t": "A song that guides me to the earth"
+},
+{
+"v": "con-vida",
+"dir": "silent",
+"h": true,
+"yt": "fZwVg_EayTI",
+"k": "Silent video · 1-minute preview",
+"t": "Why are we alive?"
+},
+{
+"v": "maquina",
+"dir": "silent",
+"h": true,
+"yt": "i4tyAFFycco",
+"k": "Silent video · 1-minute preview",
+"t": "Seeking the silence of the past while cleaning a typewriter"
+},
+{
+"v": "presente",
+"dir": "silent",
+"h": true,
+"yt": "ZilCId2cZXQ",
+"k": "Silent video · 1-minute preview",
+"t": "How hard it is to be present, right? But how good it feels"
+},
+{
+"l": "https://www.youtube.com/@ezehaize/videos",
+"kind": "YouTube channel",
+"t": "More on my channel"
+}
+]
+}
+]
+},
+{
+"id": "other",
+"t": "Other projects",
+"cover": "other/cover-4.jpg",
+"tx": "Other projects",
+"short": "Content creation and social media: my own account, Movimiento al Desarrollo, @majolopezcounselor, CEPPA, plus on-location shoots.",
+"body": "Content creation and social media. My own Instagram account, where I write, host and edit educational reels; social media for Movimiento al Desarrollo, including their podcast “Argentina Posible”; the Instagram accounts of @majolopezcounselor and CEPPA Adaptógenos. Plus smaller projects where I go on location, take the photos and film and edit the videos. For Andares, a psychotherapy group that works with horses, I went to the farm; for the Instagram account of Polkies, I covered their pastry course.",
+"groups": [
+{
+"h": "My account · @_ezemartinengo",
+"avatar": "assets/foto.jpg",
+"handle": "@_ezemartinengo",
+"desc": "My own Instagram account, where I write, host and edit educational reels.",
+"items": [
+{
+"v": "loftus",
+"k": "@_ezemartinengo",
+"t": "The false memory experiment"
+},
+{
+"v": "slovic",
+"k": "@_ezemartinengo",
+"t": "Why are we indifferent?"
+},
+{
+"v": "curiosidad",
+"k": "@_ezemartinengo",
+"t": "Long live curiosity"
+},
+{
+"v": "moria",
+"k": "@_ezemartinengo",
+"t": "Moria Casán and stigma"
+},
+{
+"l": "https://www.instagram.com/_ezemartinengo/",
+"kind": "Instagram",
+"t": "@_ezemartinengo"
+}
+]
+},
+{
+"h": "MAD",
+"items": [
+{
+"v": "perochena",
+"dir": "mad",
+"h": true,
+"yt": "c5toUrKc_vQ",
+"k": "Argentina Posible · Episode 25 · 1-minute preview",
+"t": "The history of Argentine developmentalism, with Camila Perochena"
+},
+{
+"l": "https://open.spotify.com/show/65vw9rYm5AXSlu5Exv4KGS",
+"kind": "Spotify",
+"t": "Argentina Posible podcast"
+},
+{
+"l": "https://www.youtube.com/@Movimiento.al.Desarrollo",
+"kind": "YouTube",
+"t": "Argentina Posible on YouTube"
+},
+{
+"l": "https://www.instagram.com/movimientoaldesarrollo/",
+"kind": "Instagram",
+"t": "@movimientoaldesarrollo"
+}
+],
+"avatar": "mad/avatar.jpg",
+"handle": "Movimiento al Desarrollo · @movimientoaldesarrollo",
+"desc": "I manage their social media: I plan and design the content, edit it and publish everything on Spotify, YouTube and Instagram, including their podcast “Argentina Posible”. Here’s one example."
+},
+{
+"h": "CEPPA Adaptógenos",
+"avatar": "other/ceppa-avatar.jpg",
+"handle": "CEPPA Adaptógenos · @ceppa.adaptogenos",
+"desc": "I manage their Instagram account: I plan, design, edit and publish the content. Here are some examples.",
+"items": [
+{
+"v": "curso-adaptogenos",
+"k": "CEPPA",
+"t": "Do they really work? · Course promo"
+},
+{
+"v": "ceppa",
+"k": "CEPPA",
+"t": "Adaptogens and wellbeing"
+},
+{
+"v": "ceppa-proceso",
+"dir": "other",
+"k": "CEPPA",
+"t": "How and where we make our adaptogens"
+},
+{
+"v": "ceppa-cordyceps",
+"dir": "other",
+"k": "CEPPA",
+"t": "Cordyceps: more than physical energy"
+},
+{
+"l": "https://www.instagram.com/ceppa.adaptogenos/",
+"kind": "Instagram",
+"t": "@ceppa.adaptogenos"
+}
+]
+},
+{
+"h": "Andares · Psychotherapy with horses",
+"items": [
+{
+"v": "caballos-1",
+"dir": "other",
+"k": "Andares",
+"t": "Reel 1"
+},
+{
+"v": "caballos-2",
+"dir": "other",
+"k": "Andares",
+"t": "Reel 2"
+},
+{
+"v": "caballos-3",
+"dir": "other",
+"k": "Andares",
+"t": "Reel 3"
+},
+{
+"l": "https://www.instagram.com/andares.vv/",
+"kind": "Instagram",
+"t": "@andares.vv"
+}
+],
+"avatar": "other/andares-avatar.jpg",
+"handle": "ANDARES · @andares.vv",
+"desc": "For this psychotherapy group that works with horses, I went to the farm, took the photos and filmed and edited the reels."
+},
+{
+"h": "Polkies · Pastry course",
+"items": [
+{
+"v": "polkies",
+"dir": "other",
+"k": "Polkies",
+"t": "Cookie decorating course"
+},
+{
+"l": "https://www.instagram.com/polkiescookies/",
+"kind": "Instagram",
+"t": "@polkiescookies"
+}
+],
+"handle": "Polkies Cookies · @polkiescookies",
+"desc": "For the Instagram account of Polkies, I went to their pastry course, took the photos and filmed and edited the reel.",
+"avatar": "other/polkies-avatar.jpg"
+},
+{
+"h": "majolopezcounselor",
+"avatar": "majo/avatar.jpg",
+"handle": "@majolopezcounselor",
+"desc": "I manage her Instagram account: I create the designs and edit the audiovisual content. These are some examples.",
+"items": [
+{
+"v": "biles",
+"dir": "majo",
+"k": "@majolopezcounselor",
+"t": "Simone Biles"
+},
+{
+"v": "confianza",
+"dir": "majo",
+"k": "@majolopezcounselor",
+"t": "Trust is key to reaching our dreams"
+},
+{
+"v": "colapinto",
+"dir": "majo",
+"k": "@majolopezcounselor",
+"t": "Franco Colapinto"
+},
+{
+"v": "frankl",
+"dir": "majo",
+"k": "@majolopezcounselor",
+"t": "Viktor Frankl on freedom"
+},
+{
+"v": "rodeate",
+"dir": "majo",
+"k": "@majolopezcounselor",
+"t": "Surround yourself with people who help you grow"
+},
+{
+"l": "https://www.instagram.com/majolopezcounselor/",
+"kind": "Instagram",
+"t": "@majolopezcounselor"
+}
+]
+}
+]
+}
+];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const n=c=>c.groups.reduce((a,g)=>a+g.items.length,0);
+const bins=document.getElementById('bins'),det=document.getElementById('detail');
+bins.innerHTML=cats.map(c=>`<button class="binc" type="button" data-id="${c.id}" aria-controls="detail">
+ <div class="cv">${c.cover?`<img loading="lazy" src="${c.cover}" alt="">`:`<div class="tx">${esc(c.tx)}</div>`}<span class="ct">${n(c)} ${n(c)>1?"pieces":"piece"}</span></div>
+ <div class="b"><h3>${esc(c.t)}</h3><p>${esc(c.short)}</p><span class="open">Open ›</span></div></button>`).join('');
+const href=i=>i.l||("https://www.youtube.com/"+(String(i.y).startsWith('shorts/')?i.y:"watch?v="+i.y));
+const item=i=>i.v?`<div class="it v${i.h?' h':''}"><video controls playsinline preload="none" poster="${i.dir||'reels'}/${i.v}.jpg" src="${i.parts?i.parts[0]:(i.dir||'reels')+'/'+i.v+'.mp4'}"${i.parts?` data-parts='${JSON.stringify(i.parts)}'`:''} aria-label="${esc(i.t)}"></video><span class="k">${esc(i.k)}</span><h3>${esc(i.t)}</h3>${i.yt?`<a class="full" href="https://www.youtube.com/watch?v=${i.yt}">Full video on YouTube ↗</a>`:''}</div>`
+ :(i.img||i.tx)?`<a class="it y" href="${href(i)}"><div class="th">${i.img?`<img loading="lazy" src="${i.img}" alt="">`:`<div class="cv"><div class="tx" style="height:100%">${esc(i.tx)}</div></div>`}<span>Watch on YouTube ↗</span></div><span class="k">${esc(i.k)}</span><h3>${esc(i.t)}</h3></a>`
+ :i.nl?`<div class="it t"><span class="kind">${esc(i.kind)}</span><b>${esc(i.t)}</b><span class="go">Edited by me</span></div>`:`<a class="it t" href="${href(i)}"><span class="kind">${esc(i.kind)}</span><b>${esc(i.t)}</b><span class="go">Open ↗</span></a>`;
+function show(id,scroll){
+ const c=cats.find(x=>x.id===id);
+ bins.querySelectorAll('.binc').forEach(b=>b.setAttribute('aria-current',b.dataset.id===id));
+ if(!c){det.hidden=true;det.innerHTML='';return}
+ det.innerHTML=`<div class="dh"><h2 class="plate">${esc(c.t)}</h2><button class="btn close" type="button" id="cl">Close ×</button></div>
+ <p class="dbody">${esc(c.body)}</p>
+ ${c.groups.map(g=>`<h3 class="gh">${esc(g.h)}</h3>${g.desc?`<div class="gdesc">${g.avatar?`<img src="${g.avatar}" alt="">`:''}<div>${g.handle?`<b>${esc(g.handle)}</b>`:''}<p>${esc(g.desc)}</p></div></div>`:''}${(()=>{const H=g.items.filter(i=>i.v&&i.h),O=g.items.filter(i=>!(i.v&&i.h));return [H,O].filter(a=>a.length).map(a=>`<div class="items">${a.map(item).join('')}</div>`).join('')})()}`).join('')}${c.process?`<div class="proc"><h3 class="gh">Process</h3>
+ <div class="steps">
+  <figure><img src="em/aesthetic.jpg" alt="Aesthetic proposal: night forest, red forest and red city at dusk"><figcaption><b>1 · Aesthetic proposal</b>Night and day, light and darkness.</figcaption></figure>
+  <figure><video src="em/animatic.mp4" poster="em/animatic-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="Hand-drawn animatic"></video><figcaption><b>2 · Animatic</b>Hand-drawn animatic to plan timing and camera.</figcaption></figure>
+  <figure><video src="em/first.mp4" poster="em/first-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="First version of the animation"></video><figcaption><b>3 · First version</b>The first full animated cut, in the final palette.</figcaption></figure>
+ </div>
+ <div class="pal"><div class="sw">${['141D2A','21354E','2F4054','B54343','A05F5F','AA2B2B'].map(h=>`<span><i style="background:#${h}"></i>${h}</span>`).join('')}</div><p>Colour palette inspired by the colours that appear just before dawn, when the first light begins to show.</p></div>
+ <a class="full" href="https://www.behance.net/gallery/155218885/Everything-Matters">See the full process on Behance ↗</a></div>`:''}`;
+ det.hidden=false;
+ document.getElementById('cl').addEventListener('click',()=>{history.replaceState(null,'','#work');show(null);document.getElementById('work').scrollIntoView()});
+ if(scroll)det.scrollIntoView({block:'start'});
+}
+const railItems=[{v:"loftus",k:"My account · Educational",t:"The false memory experiment"},{v:"slovic",k:"My account · Educational",t:"Why are we indifferent?"},{v:"curiosidad",k:"My account · Educational",t:"Long live curiosity"},{v:"moria",k:"My account · Pop culture",t:"Moria Casán and stigma"},{v:"curso-adaptogenos",k:"CEPPA · Course promo",t:"Do they really work?"},{v:"ceppa",k:"CEPPA · Brand",t:"Adaptogens and wellbeing"},{v:"geopolitica",k:"Economy",t:"Natural resources and geopolitics"},{"v": "ib-campus-en", "dir": "hey", "k": "Interbanking · IBCampus", "t": "The World Cup arrives at IBCampus"},{"v": "ib-silvana-mondino", "dir": "hey", "k": "Interbanking · IBCampus", "t": "Silvana Mondino · Reel"},{"v": "ib-tomas-balmaceda", "dir": "hey", "k": "Interbanking · IBCampus", "t": "Tomás Balmaceda · Reel"},{"v": "gsk-que-es-meningitis", "dir": "hey", "k": "GSK", "t": "What causes meningitis?"},{"v": "gsk-meningitis", "dir": "hey", "k": "GSK", "t": "Meningitis"},{"v": "gsk-respiracion", "dir": "hey", "k": "GSK", "t": "How your respiratory system works"},{"v": "gsk-calor", "dir": "hey", "k": "GSK", "t": "Heat"},{"v": "gsk-zoster", "dir": "hey", "k": "GSK", "t": "Zoster tips"},{"v": "bg-evento", "dir": "hey", "k": "Bio Green", "t": "2025 annual meeting in numbers"},{"v": "bg-anual", "dir": "hey", "k": "Bio Green", "t": "Annual reel"},{"v": "bg-4-anos", "dir": "hey", "k": "Bio Green", "t": "Four years"},{"v": "bg-chile", "dir": "hey", "k": "Bio Green", "t": "Chile"},{"v": "bg-empatia", "dir": "hey", "k": "Bio Green", "t": "Empathy"},{"v": "bg-gratitud", "dir": "hey", "k": "Bio Green", "t": "Gratitude"},{"v": "bg-flor-rubio", "dir": "hey", "k": "Bio Green", "t": "Flor Rubio"}, {"v": "bg-dinero", "dir": "hey", "k": "Bio Green", "t": "Why women entrepreneurs should talk more about money"},{"v": "natura-dia-madres", "dir": "hey", "k": "Natura", "t": "Mother’s Day live"},{"v": "caballos-1", "dir": "other", "k": "Andares", "t": "Therapy with horses · Reel 1"},{"v": "caballos-2", "dir": "other", "k": "Andares", "t": "Therapy with horses · Reel 2"},{"v": "caballos-3", "dir": "other", "k": "Andares", "t": "Therapy with horses · Reel 3"},{"v": "meditalo-animacion", "dir": "hey", "k": "Meditalo", "t": "Meditalo animation"},{"v": "meditalo-ciencia", "dir": "hey", "k": "Meditalo", "t": "What does science say?"},{"v": "meditalo-ia", "dir": "hey", "k": "Meditalo", "t": "AI and meditation"},{"v": "polkies", "dir": "other", "k": "Polkies", "t": "Cookie decorating course"},{"v": "biles", "dir": "majo", "k": "@majolopezcounselor", "t": "Simone Biles"},{"v": "confianza", "dir": "majo", "k": "@majolopezcounselor", "t": "Trust is key to reaching our dreams"},{"v": "colapinto", "dir": "majo", "k": "@majolopezcounselor", "t": "Franco Colapinto"},{"v": "frankl", "dir": "majo", "k": "@majolopezcounselor", "t": "Viktor Frankl on freedom"},{"v": "rodeate", "dir": "majo", "k": "@majolopezcounselor", "t": "Surround yourself with people who help you grow"},{"v": "ceppa-proceso", "dir": "other", "k": "CEPPA", "t": "How and where we make our adaptogens"},{"v": "ceppa-cordyceps", "dir": "other", "k": "CEPPA", "t": "Cordyceps: more than physical energy"}];
+const ANIM=new Set(['gsk-que-es-meningitis','gsk-meningitis','gsk-respiracion','gsk-calor','gsk-zoster','meditalo-animacion','bg-dinero']);
+const tagOf=x=>ANIM.has(x.v)?'anim':'people';
+railItems.sort((p,q)=>(tagOf(p)==='anim')-(tagOf(q)==='anim'));
+const rail=document.getElementById('rail');rail.innerHTML=railItems.map(item).join('');
+[...rail.children].forEach((el,n)=>el.dataset.f=tagOf(railItems[n]));
+const F=[['all','All'],['anim','Animated'],['people','Non-animated']];
+const chips=document.getElementById('chips');
+chips.innerHTML=F.map(([id,l])=>`<button type="button" class="chip" data-f="${id}" aria-pressed="${id==='all'}">${l} <span>${id==='all'?railItems.length:railItems.filter(x=>tagOf(x)===id).length}</span></button>`).join('');
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const f=b.dataset.f;chips.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c===b));[...rail.children].forEach(el=>{el.hidden=!(f==='all'||el.dataset.f===f);if(el.hidden){const v=el.querySelector('video');v&&v.pause()}});rail.scrollLeft=0});
+bins.addEventListener('click',e=>{const b=e.target.closest('.binc');if(!b)return;location.hash=b.dataset.id});
+const route=()=>{const h=location.hash.slice(1);if(cats.some(c=>c.id===h))show(h,true);else if(h==='work'||!h)show(null)};
+addEventListener('hashchange',route);route();
+document.addEventListener('play',e=>{if(e.target.muted&&e.target.loop)return;document.querySelectorAll('video').forEach(v=>{if(v!==e.target&&!(v.muted&&v.loop))v.pause()})},true);
+
+
+
+/* multi-part videos: play the next part when one ends */
+document.addEventListener('ended',e=>{const v=e.target,p=v.dataset&&v.dataset.parts;if(!p)return;const L=JSON.parse(p),k=L.findIndex(x=>v.src.endsWith(x));if(k>-1&&k<L.length-1){v.src=L[k+1];(window.__blob?window.__blob(v):Promise.resolve()).then(()=>v.play().catch(()=>{}))}else if(k===L.length-1){v.src=L[0]}},true);
+document.getElementById('cp').addEventListener('click',e=>{navigator.clipboard.writeText('ezehaize@gmail.com').then(()=>{e.target.textContent='Copied ✓';setTimeout(()=>e.target.textContent='Copy email',1800)}).catch(()=>{e.target.textContent='ezehaize@gmail.com'})});
+document.querySelectorAll('.rarr').forEach(b=>b.addEventListener('click',()=>{const r=document.getElementById('rail');r.scrollBy({left:(b.classList.contains('l')?-1:1)*r.clientWidth*.8,behavior:'smooth'})}));
+/* showreel autoplay */
+const srv=document.getElementById('srv');window.__blob&&window.__blob(srv).then(()=>{const r=srv.getBoundingClientRect();if(window.__WK&&r.top<innerHeight&&r.bottom>0)srv.play().catch(()=>{})});const _x=0,srsnd=document.getElementById('srsnd'),srplay=document.getElementById('srplay');
+const setSnd=()=>{srsnd.textContent=srv.muted?'Sound on':'Mute'};
+const unmute=()=>{srv.muted=false;srv.loop=false;srv.play().catch(()=>{});setSnd()};
+srsnd.addEventListener('click',()=>{if(srv.muted)unmute();else{srv.muted=true;srv.loop=true;setSnd()}});
+srplay.addEventListener('click',()=>{srv.currentTime=0;unmute();srv.scrollIntoView({block:'center'})});
+srv.addEventListener('volumechange',setSnd);
+if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver' in window){
+ new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting&&e.intersectionRatio>=.5)srv.play().catch(()=>{});else if(!e.isIntersecting||e.intersectionRatio<.2)srv.pause()}),{threshold:[0,.2,.5]}).observe(srv);
+}
+
+}
+</script>
+<div class="fab" id="fab"><a class="hire" href="#contact">Let’s talk</a><a class="top" href="#top" aria-label="Back to top">↑</a></div>
+<script>
+(()=>{
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const hero=document.querySelector('.hero');requestAnimationFrame(()=>setTimeout(()=>hero.classList.add('lit'),250));
+/* progress + fab */
+const prog=document.getElementById('prog'),fab=document.getElementById('fab'),contact=document.getElementById('contact');
+const onScroll=()=>{const h=document.documentElement,max=h.scrollHeight-innerHeight;prog.style.transform=`scaleX(${max>0?scrollY/max:0})`;
+ fab.classList.toggle('on',scrollY>innerHeight*.8);const r=contact.getBoundingClientRect();fab.classList.toggle('hide-hire',r.top<innerHeight)};
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+/* active nav link */
+const links=[...document.querySelectorAll('.nav a.l')];
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id))}),{rootMargin:'-45% 0px -50% 0px'});
+['showreel','reels','work','how','about','contact'].forEach(id=>{const el=document.getElementById(id);el&&io.observe(el)});
+/* reveal on scroll */
+const rvSel='.sec-h,.chips,.railwrap,.binc,.how li,.howx>div,.about>div,.contact .wrap>div,.sr>div';
+const rio=!RM&&'IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'}):null;
+const reveal=root=>{if(!rio)return;root.querySelectorAll(rvSel).forEach(el=>{if(el.classList.contains('rv'))return;const sib=[...el.parentNode.children].filter(c=>c.matches(rvSel));el.style.setProperty('--d',Math.min(sib.indexOf(el),5)*.08+'s');el.classList.add('rv');rio.observe(el)})};
+reveal(document);
+/* video tiles: play overlay + hover preview */
+const hover=matchMedia('(hover:hover)').matches;
+const enhance=root=>root.querySelectorAll('.it.v video:not([data-x])').forEach(v=>{
+ v.dataset.x=1;const card=v.closest('.it.v');const w=document.createElement('div');w.className='vw';v.before(w);w.append(v);v.controls=false;
+ const b=document.createElement('button');b.type='button';b.className='vplay';b.setAttribute('aria-label','Play '+(v.getAttribute('aria-label')||'video'));b.innerHTML='<span></span>';w.append(b);
+ const start=()=>{card.classList.remove('preview');card.classList.add('playing');v.loop=false;v.muted=false;v.controls=true;v.currentTime=card.dataset.pv?0:v.currentTime;delete card.dataset.pv;v.play().catch(()=>{})};
+ b.addEventListener('click',()=>{if(window.__WK&&!v.src.startsWith('blob:')){b.querySelector('span').style.opacity=.5;window.__blob(v).then(()=>{b.querySelector('span').style.opacity='';start()})}else start()});
+ v.addEventListener('pause',()=>{if(!card.classList.contains('preview')&&v.controls&&v.currentTime===0)card.classList.remove('playing')});
+ v.addEventListener('ended',()=>{if(!v.dataset.parts){card.classList.remove('playing');v.controls=false}});
+ if(hover&&!RM&&!window.__WK){w.addEventListener('mouseenter',()=>{if(card.classList.contains('playing'))return;card.classList.add('preview');card.dataset.pv=1;v.muted=true;v.loop=true;v.play().catch(()=>{})});
+  w.addEventListener('mouseleave',()=>{if(!card.classList.contains('preview'))return;card.classList.remove('preview');v.pause();v.loop=false})}
+});
+enhance(document);
+new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1){enhance(n.parentNode||n);reveal(n.parentNode||n)}}))).observe(document.body,{childList:true,subtree:true});
+/* rail progress + arrows state */
+const rail=document.getElementById('rail'),rw=rail.closest('.railwrap');const bar=document.createElement('div');bar.className='rbar';bar.innerHTML='<i></i>';rw.after(bar);
+const L=rw.querySelector('.rarr.l'),R=rw.querySelector('.rarr.r');
+const rs=()=>{const m=rail.scrollWidth-rail.clientWidth,f=m>0?rail.scrollLeft/m:0,wd=Math.max(.12,rail.clientWidth/rail.scrollWidth);const i=bar.firstChild;i.style.width=wd*100+'%';i.style.transform=`translateX(${f*(1/wd-1)*100}%)`;L.disabled=rail.scrollLeft<8;R.disabled=rail.scrollLeft>m-8};
+rail.addEventListener('scroll',rs,{passive:true});addEventListener('resize',rs);document.getElementById('chips').addEventListener('click',()=>setTimeout(rs,50));rs();
+
+/* Safari: preload videos near the viewport as blobs */
+if(window.__WK&&'IntersectionObserver' in window){const q=[];let busy=0;const pump=()=>{while(busy<2&&q.length){const v=q.shift();busy++;window.__prefetch(v).finally(()=>{busy--;pump()})}};
+ const po=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){po.unobserve(e.target);q.push(e.target);pump()}}),{rootMargin:'200px'});
+ const watch=r=>r.querySelectorAll('.it.v video').forEach(v=>{if(!v.dataset.wk){v.dataset.wk=1;po.observe(v)}});watch(document);
+ new MutationObserver(()=>watch(document)).observe(document.body,{childList:true,subtree:true})}
+/* stats count-up */
+const nums={reels:rail.children.length,projects:document.querySelectorAll('#bins .binc').length};
+document.querySelectorAll('.stats b').forEach(b=>{const t=+(nums[b.dataset.n]??b.dataset.n),s=b.dataset.s||'';b.textContent=(RM?t:0)+s;
+ if(RM)return;new IntersectionObserver((es,o)=>{if(!es[0].isIntersecting)return;o.disconnect();const t0=performance.now();const f=now=>{const k=Math.min(1,(now-t0)/1200),e=1-Math.pow(1-k,3);b.textContent=Math.round(t*e)+s;if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}).observe(b)});
+})();
+</script>
+</body>
+</html>
